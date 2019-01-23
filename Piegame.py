@@ -19,6 +19,7 @@ keep_going = True
 step = 0
 WHITE = (255,255,255)
 
+
 class egg:
         def __init__(self): #init
                 self.hitsLeft = random.randint(3,5)
@@ -61,7 +62,8 @@ class pie():
         quality = 0
 
 class bowl():
-        size = 0
+        def drawbowl():
+                pygame.draw.rect(screen, (0,204,204),(250,400,250,50) )
 
 Egg = egg()
 print(Egg.hitsLeft)
@@ -71,11 +73,12 @@ while keep_going == True:
                 if event.type == pygame.QUIT:
                         keep_going = False
                         
-        screen.fill((0,0,0)) 
+        screen.fill((0,0,0))
+        bowl.drawbowl()
         if step == 0: #egg stage 
                 Egg.drawEgg()
-                speed = math.sqrt(pygame.mouse.get_rel()[0]**2 + pygame.mouse.get_rel()[1]**2)
-                if speed > 20:
+                speed = math.sqrt(pygame.mouse.get_rel()[0]**2 + pygame.mouse.get_rel()[1]**2) #Converts vector into scalar
+                if speed > 20 and Egg.eggpos[0] > 250 and Egg.eggpos[0] < 500 and Egg.eggpos[1]>400 and Egg.eggpos[1] < 450:
                         step = Egg.hitEgg(step)
         #if step == 1: 
                 
