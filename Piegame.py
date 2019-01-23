@@ -18,6 +18,8 @@ screen = pygame.display.set_mode([800,600])
 keep_going = True
 step = 0
 WHITE = (255,255,255)
+DATPINK = (249,119,188)
+DATBLUE = (0,204,204)
 
 
 class egg:
@@ -44,28 +46,47 @@ class egg:
 
 
 
-class milk():
+class milk:
         milkLeft = 0
-        def __init__():
-                milkLeft = 5
+        def __init__(self): #init
+                self.milkLeft = 500
+                self.milkpos = pygame.mouse.get_pos()
+                self.angle = 0
+                self.rightDown = False
+                self.leftDown = False 
+        def drawMilk(self): #Draws milk carton on screen
+                self.milkpos = pygame.mouse.get_pos()
+                pygame.draw.rect(screen,DATPINK,(self.milkpos[0],self.milkpos[1],150,300))
+        def rotateLeft(self): #rotates left
+                self.angle = self.angle+1
+                if self.angle >= 180:
+                        self.angle = -179
+        def rotateRight(self): # rotates right
+                self.angle -=1
+                if self.angle <= -180:
+                        self.angle = 179
+        def pourMilk(self): #Pours milk if the carton is tilted enough
+                if self.angle > 70:
+                        self.milkLeft -=5
+        
 
-class flour():
-        flourLeft = 0
+class flour:
         def __init__():
                 flourLeft = 5
 
-class filling():
+class filling:
         quality = 0
                 
 
-class pie():
+class pie:
         quality = 0
 
-class bowl():
+class bowl:
         def drawbowl():
-                pygame.draw.rect(screen, (0,204,204),(250,400,250,50) )
+                pygame.draw.rect(screen, DATBLUE,(250,400,250,50) ) #draws bowl at fixed location with fixed size
 
 Egg = egg()
+Milk = milk() #Delcare class objects outside of game loop to prevent redeclaring every loop (can be better?) 
 print(Egg.hitsLeft)
 
 while keep_going == True:
@@ -78,10 +99,27 @@ while keep_going == True:
         if step == 0: #egg stage 
                 Egg.drawEgg()
                 speed = math.sqrt(pygame.mouse.get_rel()[0]**2 + pygame.mouse.get_rel()[1]**2) #Converts vector into scalar
-                if speed > 20 and Egg.eggpos[0] > 250 and Egg.eggpos[0] < 500 and Egg.eggpos[1]>400 and Egg.eggpos[1] < 450:
+                if speed > 20 and Egg.eggpos[0] > 250 and Egg.eggpos[0] < 500 and Egg.eggpos[1]>400 and Egg.eggpos[1] < 450: #Ugly collision and speed check
                         step = Egg.hitEgg(step)
-        #if step == 1: 
-                
+        if step == 1:
+                Milk.drawMilk()
+                for event in pygame.event.get(): #This is an inefficent 2nd run throughk, but more readable
+                        if event.type == pygame.KEYDOWN: #Checks for key press
+                                if event.key == pygame.K_RIGHT:
+                                        Milk.rightDown = True
+                                if event.key == pygame.K_LEFT:
+                                        Milk.leftDown = True
+                        if event.type == pygame.KEYUP: #Checks for key release
+                                if event.key == pygame.K_RIGHT:
+                                        Milk.rightDown = False
+                                if event.key == pygame.K_LEFT:
+                                        Milk.leftDown = False
+                if Milk.rightDown == True:
+                        Milk.rotateRight()
+                        print("Milk angle: ",Milk.angle)
+                if Milk.leftDown == True:
+                        Milk.rotateLeft()
+                        print("Milk angle: ", Milk.angle)
         pygame.display.update()
 		
 pygame.quit()
