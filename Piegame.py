@@ -18,15 +18,15 @@ keep_going = True
 step = 0
 WHITE = (255,255,255)
 
-class egg():
-        hitsLeft = 0
+class egg:
         def __init__(self):
-                self.hitsLeft = random.randint(3,5)
+                self.hitsLeft = 5
 
-        def hitEgg():
-                hitsLeft -= 1
-                if hitsLeft <=0:
-                     crack()
+        def hitEgg(self):
+                print("ok")
+                #self.hitsLeft -= 1
+                #if self.hitsLeft <=0:
+                     #crack()
         def drawEgg():
                 eggpos = pygame.mouse.get_pos()
                 pygame.draw.circle(screen, WHITE, eggpos, 15,0)
@@ -50,7 +50,11 @@ class filling():
 class pie():
         quality = 0
 
-Egg = egg
+class bowl():
+        size = 0
+
+Egg = egg()
+print(Egg.hitsLeft)
 
 while keep_going == True:
         for event in pygame.event.get():
@@ -59,6 +63,7 @@ while keep_going == True:
         screen.fill((0,0,0))
         if step == 0:
                 egg.drawEgg()
+                
         if step == 1:
                 print("")
         pygame.display.update()
