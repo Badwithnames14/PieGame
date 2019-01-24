@@ -21,6 +21,7 @@ WHITE = (255,255,255)
 DATPINK = (249,119,188)
 DATBLUE = (0,204,204)
 pygame.mixer.init()
+clock = pygame.time.Clock()
 Cambria = pygame.font.SysFont("Cambria",24)
 
 
@@ -68,17 +69,31 @@ class milk:
                 self.angle -=1
                 if self.angle <= -180:
                         self.angle = 179
-        def pourMilk(self): #Pours milk 
+        def pourMilk(self, array): #Pours milk 
                 if self.milkLeft > 0:
                         self.milkLeft -=5
+                        Drop = milkDrop(self)
+                        array.append(Drop)
+                        
                 if self.milkLeft < 0:
                         self.milkLeft = 0
         
-class milkDrop:
-        def __init__(self):
+class milkDrop: #Class for falling milk drops. Yet to be impletmented
+        def __init__(self,milk):
                 self.speed = 0
-        def fall():
+                self.droppos = milk.milkpos
+        def fall(self, bowl,array,index): #Updates drop as it falls
+                self.droppos = (self.droppos[0],int(self.droppos[1]+speed)) 
                 self.speed += 3
+                pygame.draw.circle(screen, WHITE, self.droppos, 5,0)
+                #if self.droppos : #If collides with bowl, update bowl then delete instance
+                       # bowl.milkrequired -= 5
+                       # self.selfDestruct(array,index)
+                if self.droppos[1] > 600: #If reached bottom of screen, delete instance. CHANGE TO VARIABLE SCREEN SIZES!!!
+                        self.selfDestruct(array,index)
+        def selfDestruct(self,array,index): #Deletes instance
+                del array[index]
+                
 class flour:
         def __init__():
                 flourLeft = 5
@@ -91,37 +106,48 @@ class pie:
         quality = 0
 
 class bowl:
-        def drawbowl():
+        def __init__(self):
+                self.milkrequired = 300
+        def drawbowl(self):
                 pygame.draw.rect(screen, DATBLUE,(250,400,250,50) ) #draws bowl at fixed location with fixed size
 
 Egg = egg()
+Bowl = bowl()
 Milk = milk() #Delcare class objects outside of game loop to prevent redeclaring every loop (can be better?) 
 print(Egg.hitsLeft)
+Milkdrops=[]
 
 while keep_going == True:
+        
         for event in pygame.event.get(): #Loop to check for user quiting game
                 if event.type == pygame.QUIT:
                         keep_going = False
                         
+                        
         screen.fill((0,0,0)) #Removes old sprites
-        bowl.drawbowl()
+        Bowl.drawbowl()
         if step == 0: #egg stage 
                 Egg.drawEgg()
                 EggString = "Crack the egg!"
-                text = Cambria.render(EggString, True,WHITE)
+                text = Cambria.render(EggString, True,WHITE) #Writes text in pygame window
                 textBox = text.get_rect()
                 textBox.centerx = screen.get_rect().centerx
                 screen.blit(text,textBox)
                 speed = math.sqrt(pygame.mouse.get_rel()[0]**2 + pygame.mouse.get_rel()[1]**2) #Converts vector into scalar
                 if speed > 20 and Egg.eggpos[0] > 250 and Egg.eggpos[0] < 500 and Egg.eggpos[1]>400 and Egg.eggpos[1] < 450: #Ugly collision and speed check
                         step = Egg.hitEgg(step)
+
+                        
         if step == 1: #Milk step
+                
                 Milk.drawMilk()
-                MilkString = "Pour the Milk! Milk left: " + str(Milk.milkLeft)
+                
+                MilkString = "Pour the Milk! Milk left: " + str(Milk.milkLeft) #Writes text in pygame window
                 Milktext = Cambria.render(MilkString, True, WHITE)
                 textBox = Milktext.get_rect()
                 textBox.centerx = screen.get_rect().centerx
                 screen.blit(Milktext,textBox)
+                
                 if pygame.key.get_pressed()[pygame.K_RIGHT]: #Checks if right arrow key is pressed down
                         Milk.rotateRight()
                         print("angle: ", Milk.angle)
@@ -129,9 +155,20 @@ while keep_going == True:
                         Milk.rotateLeft()
                         print("angle: ", Milk.angle)
                 if (Milk.angle > 90 or Milk.angle < -90) and Milk.milkLeft > 0: #Pours milk if carton is tilted enough (Move into Milk class?)
-                        Milk.pourMilk()
+                        Milk.pourMilk(Milkdrops)
                         print("Milk left: ", Milk.milkLeft)
-        pygame.display.update() #Updates display
+                dropidx = 0 
+                for drop in Milkdrops: #Tracks list of milk drops
+                        drop.fall(Bowl,Milkdrops,dropidx)
+                        dropidx += 1
 
-		
+                        
+        #if step == 2: #Flour step
+
+
+                
+        pygame.display.update() #Updates display
+        clock.tick(60)
+
+print(Milkdrops)		
 pygame.quit()
