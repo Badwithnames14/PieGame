@@ -65,9 +65,11 @@ class milk:
                 self.angle -=1
                 if self.angle <= -180:
                         self.angle = 179
-        def pourMilk(self): #Pours milk if the carton is tilted enough
-                if self.angle > 70:
+        def pourMilk(self): #Pours milk 
+                if self.milkLeft > 0:
                         self.milkLeft -=5
+                if self.milkLeft < 0:
+                        self.milkLeft = 0
         
 
 class flour:
@@ -103,23 +105,15 @@ while keep_going == True:
                         step = Egg.hitEgg(step)
         if step == 1:
                 Milk.drawMilk()
-                for event in pygame.event.get(): #This is an inefficent 2nd run throughk, but more readable
-                        if event.type == pygame.KEYDOWN: #Checks for key press
-                                if event.key == pygame.K_RIGHT:
-                                        Milk.rightDown = True
-                                if event.key == pygame.K_LEFT:
-                                        Milk.leftDown = True
-                        if event.type == pygame.KEYUP: #Checks for key release
-                                if event.key == pygame.K_RIGHT:
-                                        Milk.rightDown = False
-                                if event.key == pygame.K_LEFT:
-                                        Milk.leftDown = False
-                if Milk.rightDown == True:
+                if pygame.key.get_pressed()[pygame.K_RIGHT]:
                         Milk.rotateRight()
-                        print("Milk angle: ",Milk.angle)
-                if Milk.leftDown == True:
+                        print("angle: ", Milk.angle)
+                if pygame.key.get_pressed()[pygame.K_LEFT]:
                         Milk.rotateLeft()
-                        print("Milk angle: ", Milk.angle)
+                        print("angle: ", Milk.angle)
+                if Milk.angle > 90 or Milk.angle < -90:
+                        Milk.pourMilk()
+                        print("Milk left: ", Milk.milkLeft)
         pygame.display.update()
 		
 pygame.quit()
