@@ -23,6 +23,8 @@ DATBLUE = (0,204,204)
 pygame.mixer.init()
 clock = pygame.time.Clock()
 Cambria = pygame.font.SysFont("Cambria",24)
+MilkCarton = pygame.image.load("Milkcarton.bmp")
+sprite_list = pygame.sprite.Group()
 
 
 
@@ -50,23 +52,31 @@ class egg:
 
 
 
-class milk:
-        milkLeft = 0
+class milk(pygame.sprite.Sprite):
         def __init__(self): #init
+                pygame.sprite.Sprite.__init__(self)
                 self.milkLeft = 500
-                self.milkpos = pygame.mouse.get_pos()
+                self.milkpos = (50,50)
+                self.image = MilkCarton
+                self.rect = self.image.get_rect()
+                self.rect.x = self.milkpos[0]
+                self.rect.y = self.milkpos[1]
                 self.angle = 0
                 self.rightDown = False
-                self.leftDown = False 
+                self.leftDown = False
+                sprite_list.add(self)
         def drawMilk(self): #Draws milk carton on screen
                 self.milkpos = pygame.mouse.get_pos()
-                pygame.draw.rect(screen,DATPINK,(self.milkpos[0],self.milkpos[1],150,300))
+                self.rect.x = self.milkpos[0]
+                self.rect.y = self.milkpos[1]
+                #pygame.draw.rect(screen,DATPINK,(self.milkpos[0],self.milkpos[1],150,300))
         def rotateLeft(self): #rotates left
+                self.image = pygame.transform.rotate(self.image,1)
                 self.angle = self.angle+1
                 if self.angle >= 180:
                         self.angle = -179
         def rotateRight(self): # rotates right
-                self.angle -=1
+                self.image = pygame.transform.rotate(self.image,-1)
                 if self.angle <= -180:
                         self.angle = 179
         def pourMilk(self, array): #Pours milk 
@@ -95,8 +105,10 @@ class milkDrop: #Class for falling milk drops. Yet to be impletmented
                 del array[index]
                 
 class flour:
-        def __init__():
+        def __init__(self):
                 flourLeft = 5
+        def drawFlour(self):
+                flour = "welp this isn't done yet" 
 
 class filling:
         quality = 0
@@ -108,6 +120,7 @@ class pie:
 class bowl:
         def __init__(self):
                 self.milkrequired = 300
+                self.flourrequired = 250
                 self.X = 250
                 self.Y = 400
                 self.width = 250
@@ -120,6 +133,7 @@ Bowl = bowl()
 Milk = milk() #Delcare class objects outside of game loop to prevent redeclaring every loop (can be better?) 
 print(Egg.hitsLeft)
 Milkdrops=[]
+FlourBag = flour()
 
 while keep_going == True:
         
@@ -167,12 +181,12 @@ while keep_going == True:
                         dropidx += 1
 
                         
-        #if step == 2: #Flour step
+        if step == 2: #Flour step
+                Flourbag.drawFlour()
 
-
-                
+        sprite_list.update()
+        sprite_list.draw(screen)
         pygame.display.update() #Updates display
         clock.tick(60)
-
-print(Milkdrops)		
+		
 pygame.quit()
