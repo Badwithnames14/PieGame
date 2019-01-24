@@ -86,9 +86,9 @@ class milkDrop: #Class for falling milk drops. Yet to be impletmented
                 self.droppos = (self.droppos[0],int(self.droppos[1]+speed)) 
                 self.speed += 3
                 pygame.draw.circle(screen, WHITE, self.droppos, 5,0)
-                #if self.droppos : #If collides with bowl, update bowl then delete instance
-                       # bowl.milkrequired -= 5
-                       # self.selfDestruct(array,index)
+                if self.droppos[0] < bowl.X+bowl.width and self.droppos[0] > bowl.X and self.droppos[1] > bowl.Y and self.droppos[1] < bowl.Y + bowl.height : #If collides with bowl, update bowl then delete instance
+                        bowl.milkrequired -= 5
+                        self.selfDestruct(array,index)
                 if self.droppos[1] > 600: #If reached bottom of screen, delete instance. CHANGE TO VARIABLE SCREEN SIZES!!!
                         self.selfDestruct(array,index)
         def selfDestruct(self,array,index): #Deletes instance
@@ -108,8 +108,12 @@ class pie:
 class bowl:
         def __init__(self):
                 self.milkrequired = 300
+                self.X = 250
+                self.Y = 400
+                self.width = 250
+                self.height = 50
         def drawbowl(self):
-                pygame.draw.rect(screen, DATBLUE,(250,400,250,50) ) #draws bowl at fixed location with fixed size
+                pygame.draw.rect(screen, DATBLUE,(self.X,self.Y,self.width,self.height) ) #draws bowl 
 
 Egg = egg()
 Bowl = bowl()
@@ -142,7 +146,7 @@ while keep_going == True:
                 
                 Milk.drawMilk()
                 
-                MilkString = "Pour the Milk! Milk left: " + str(Milk.milkLeft) #Writes text in pygame window
+                MilkString = "Pour the Milk! Milk left: " + str(Milk.milkLeft)+ " Milk needed: " + str(Bowl.milkrequired) #Writes text in pygame window
                 Milktext = Cambria.render(MilkString, True, WHITE)
                 textBox = Milktext.get_rect()
                 textBox.centerx = screen.get_rect().centerx
