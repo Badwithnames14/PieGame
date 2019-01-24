@@ -20,6 +20,9 @@ step = 0
 WHITE = (255,255,255)
 DATPINK = (249,119,188)
 DATBLUE = (0,204,204)
+pygame.mixer.init()
+Cambria = pygame.font.SysFont("Cambria",24)
+
 
 
 class egg:
@@ -71,7 +74,11 @@ class milk:
                 if self.milkLeft < 0:
                         self.milkLeft = 0
         
-
+class milkDrop:
+        def __init__(self):
+                self.speed = 0
+        def fall():
+                self.speed += 3
 class flour:
         def __init__():
                 flourLeft = 5
@@ -96,24 +103,35 @@ while keep_going == True:
                 if event.type == pygame.QUIT:
                         keep_going = False
                         
-        screen.fill((0,0,0))
+        screen.fill((0,0,0)) #Removes old sprites
         bowl.drawbowl()
         if step == 0: #egg stage 
                 Egg.drawEgg()
+                EggString = "Crack the egg!"
+                text = Cambria.render(EggString, True,WHITE)
+                textBox = text.get_rect()
+                textBox.centerx = screen.get_rect().centerx
+                screen.blit(text,textBox)
                 speed = math.sqrt(pygame.mouse.get_rel()[0]**2 + pygame.mouse.get_rel()[1]**2) #Converts vector into scalar
                 if speed > 20 and Egg.eggpos[0] > 250 and Egg.eggpos[0] < 500 and Egg.eggpos[1]>400 and Egg.eggpos[1] < 450: #Ugly collision and speed check
                         step = Egg.hitEgg(step)
-        if step == 1:
+        if step == 1: #Milk step
                 Milk.drawMilk()
-                if pygame.key.get_pressed()[pygame.K_RIGHT]:
+                MilkString = "Pour the Milk! Milk left: " + str(Milk.milkLeft)
+                Milktext = Cambria.render(MilkString, True, WHITE)
+                textBox = Milktext.get_rect()
+                textBox.centerx = screen.get_rect().centerx
+                screen.blit(Milktext,textBox)
+                if pygame.key.get_pressed()[pygame.K_RIGHT]: #Checks if right arrow key is pressed down
                         Milk.rotateRight()
                         print("angle: ", Milk.angle)
-                if pygame.key.get_pressed()[pygame.K_LEFT]:
+                if pygame.key.get_pressed()[pygame.K_LEFT]: #Checks if left arrow key is pressed down
                         Milk.rotateLeft()
                         print("angle: ", Milk.angle)
-                if Milk.angle > 90 or Milk.angle < -90:
+                if (Milk.angle > 90 or Milk.angle < -90) and Milk.milkLeft > 0: #Pours milk if carton is tilted enough (Move into Milk class?)
                         Milk.pourMilk()
                         print("Milk left: ", Milk.milkLeft)
-        pygame.display.update()
+        pygame.display.update() #Updates display
+
 		
 pygame.quit()
