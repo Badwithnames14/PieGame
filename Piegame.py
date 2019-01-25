@@ -100,6 +100,8 @@ class milk(pygame.sprite.Sprite):
                         
                 if self.milkLeft < 0:
                         self.milkLeft = 0
+        def Removeself(self):
+                self.kill()
 
 # End milk class
 
@@ -147,7 +149,8 @@ class flour(pygame.sprite.Sprite):
                 if self.flourLeft > 0:
                         size = random.randint(1,10)
                         if size > self.flourLeft:
-                                size = flourLeft
+                                size = self.flourLeft
+                        self.flourLeft -= size
                         Cloud = flour_float(size,self)
                         array.append(Cloud)
                 if self.flourLeft < 0:
@@ -188,13 +191,13 @@ class flour_float(pygame.sprite.Sprite):
                 self.step = 0
                 sprite_list.add(self)
                 
-        def float(self,array, index):
+        def float(self,bowl,array, index):
                 if self.floatright == True:
                         self.floatpos = (self.floatpos[0]+3,self.floatpos[1]+3)
                 else:
                         self.floatpos = (self.floatpos[0]-3,self.floatpos[1]+3)
                 self.step += 1
-                if self.step >= 50:
+                if self.step >= 5:
                         if self.floatright == True:
                                 self.floatright = False
                                 step = 0
@@ -203,16 +206,20 @@ class flour_float(pygame.sprite.Sprite):
                                 step = 0
                 self.rect.x = self.floatpos[0]
                 self.rect.y = self.floatpos[1]
+                if self.floatpos[0] < bowl.X+bowl.width and self.floatpos[0] > bowl.X and self.floatpos[1] > bowl.Y and self.floatpos[1] < bowl.Y + bowl.height : #If collides with bowl, update bowl then delete instance
+                        bowl.flourrequired -= self.size
+                        self.selfDestruct(array,index)
                 if self.floatpos[1] > 600: #If reached bottom of screen, delete instance. CHANGE TO VARIABLE SCREEN SIZES!!!
                         self.selfDestruct(array,index)
   
         def selfDestruct(self,array,index):
-                del array[index] 
-
-
+                del array[index]
+                self.kill()
 
 
 #End flour_float class
+
+
 
 
 class filling:
@@ -223,6 +230,8 @@ class filling:
                 self.ScreenText = "What type of pie would you like to make?"
                 
 #End filling Class
+
+
 
                 
 
@@ -239,7 +248,7 @@ class bowl:
                 self.X = 250
                 self.Y = 400
                 self.width = 250
-                self.height = 50
+                self.height = 100
         def drawbowl(self):
                 pygame.draw.rect(screen, DATBLUE,(self.X,self.Y,self.width,self.height) ) #draws bowl
 
@@ -303,6 +312,7 @@ while keep_going == True:
                         drop.fall(Bowl,Milkdrops,dropidx)
                         dropidx += 1
                 if (Bowl.milkrequired <= 0 and Milkdrops == []) or (Milk.milkLeft <= 0 and Milkdrops == []):
+                        Milk.Removeself()
                         step = 2
 
                         
@@ -320,7 +330,7 @@ while keep_going == True:
                         print("Flour left: ", Flour.flourLeft)
                 dropidx = 0 
                 for cloud in Flourclouds: #Tracks list of milk drops
-                        cloud.float(Flourclouds,dropidx)
+                        cloud.float(Bowl,Flourclouds,dropidx)
                         dropidx += 1
                 
 
