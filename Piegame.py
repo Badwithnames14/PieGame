@@ -23,7 +23,7 @@ DATBLUE = (0,204,204)
 pygame.mixer.init()
 clock = pygame.time.Clock()
 Cambria = pygame.font.SysFont("Cambria",24)
-MilkCarton = pygame.image.load("Milkcarton.bmp")
+MilkCarton = pygame.image.load("Milkcarton.bmp").convert_alpha()
 sprite_list = pygame.sprite.Group()
 
 
@@ -57,6 +57,7 @@ class milk(pygame.sprite.Sprite):
                 pygame.sprite.Sprite.__init__(self)
                 self.milkLeft = 500
                 self.milkpos = (50,50)
+                self.OGimage = MilkCarton
                 self.image = MilkCarton
                 self.rect = self.image.get_rect()
                 self.rect.x = self.milkpos[0]
@@ -65,20 +66,30 @@ class milk(pygame.sprite.Sprite):
                 self.rightDown = False
                 self.leftDown = False
                 sprite_list.add(self)
+
+                
         def drawMilk(self): #Draws milk carton on screen
                 self.milkpos = pygame.mouse.get_pos()
                 self.rect.x = self.milkpos[0]
                 self.rect.y = self.milkpos[1]
                 #pygame.draw.rect(screen,DATPINK,(self.milkpos[0],self.milkpos[1],150,300))
+
+                
         def rotateLeft(self): #rotates left
-                self.image = pygame.transform.rotate(self.image,1)
-                self.angle = self.angle+1
-                if self.angle >= 180:
-                        self.angle = -179
+                self.image = pygame.transform.rotate(self.OGimage,self.angle)
+                self.angle = self.angle+1 %360
+                if self.angle >359:
+                        self.angle = 0
+
+                        
         def rotateRight(self): # rotates right
-                self.image = pygame.transform.rotate(self.image,-1)
-                if self.angle <= -180:
-                        self.angle = 179
+                self.image = pygame.transform.rotate(self.OGimage,self.angle)    #first 2 Rotation code implemented from Stack Overflow user Ted Klein Bergman https://gamedev.stackexchange.com/questions/126353/how-to-rotate-an-image-in-pygame-without-losing-quality-or-increasing-size-or-mo
+                self.angle = self.angle-1 %360
+                if self.angle < -359:
+                        self.angle = 0
+                
+
+                        
         def pourMilk(self, array): #Pours milk 
                 if self.milkLeft > 0:
                         self.milkLeft -=5
