@@ -25,7 +25,8 @@ clock = pygame.time.Clock()
 Cambria = pygame.font.SysFont("Cambria",24)
 MilkCarton = pygame.image.load("Milkcarton.bmp").convert_alpha()
 sprite_list = pygame.sprite.Group()
-
+FlourCloud = pygame.image.load("Flourcloud.png").convert_alpha()
+Flourbag = pygame.image.load("Flourbag.png").convert_alpha()
 
 
 class egg:
@@ -50,13 +51,14 @@ class egg:
                 stage =1
                 return stage
 
+#End egg class
 
 
 class milk(pygame.sprite.Sprite):
         def __init__(self): #init
                 pygame.sprite.Sprite.__init__(self)
                 self.milkLeft = 500
-                self.milkpos = (50,50)
+                self.milkpos = (-50,-50)
                 self.OGimage = MilkCarton
                 self.image = MilkCarton
                 self.rect = self.image.get_rect()
@@ -76,7 +78,7 @@ class milk(pygame.sprite.Sprite):
 
                 
         def rotateLeft(self): #rotates left
-                self.image = pygame.transform.rotate(self.OGimage,self.angle)
+                self.image = pygame.transform.rotate(self.OGimage,self.angle)  #See note in rotateLeft below about code source
                 self.angle = self.angle+1 %360
                 if self.angle >359:
                         self.angle = 0
@@ -98,6 +100,10 @@ class milk(pygame.sprite.Sprite):
                         
                 if self.milkLeft < 0:
                         self.milkLeft = 0
+
+# End milk class
+
+
         
 class milkDrop: #Class for falling milk drops. Yet to be impletmented
         def __init__(self,milk):
@@ -114,19 +120,71 @@ class milkDrop: #Class for falling milk drops. Yet to be impletmented
                         self.selfDestruct(array,index)
         def selfDestruct(self,array,index): #Deletes instance
                 del array[index]
+
+
+#End Milk Drop class 
+
                 
-class flour:
+class flour(pygame.sprite.Sprite):
         def __init__(self):
-                flourLeft = 5
+                self.flourLeft = 500
+                self.image = Flourbag
         def drawFlour(self):
-                flour = "welp this isn't done yet" 
+                self.pos = pygame.mouse.get_pos()
+                
+        def pourFlour(self): #Creates flour_float objects
+                if self.flourLeft > 0:
+                        size = randint(1,10)
+                        if size > self.flourLeft:
+                                size = flourLeft
+                        Cloud = flour_float(self,size)
+                if self.flourLeft < 0:
+                        self.flourLeft = 0
+
+
+#End flour Class
+
+
+class flour_float:
+        def __init__(self, size, flour):
+                self.size = size
+                self.floatpos = flour.flourpos
+                self.floatright = True
+                self.step = 0
+        def float(self):
+                if self.floatright == True:
+                        self.floatpos = (self.floatpos[0]+3,self.floatpos[1]+3)
+                else:
+                        self.floatpos = (self.floatpos[0]-3,self.floatpos[1]+3)
+                self.step += 1
+                if self.step >= 5:
+                        if self.floatright == True:
+                                self.floatright = False
+                        else:
+                                self.floatright = True
+        def selfDestruct(self,array,index):
+                del array[index] 
+
+
+#End flour_float class
+
 
 class filling:
         quality = 0
+        def __init__(self):
+                self.type = "null"
+        def ChooseFilling(self):
+                self.ScreenText = "What type of pie would you like to make?"
+                
+#End filling Class
+
                 
 
 class pie:
         quality = 0
+
+
+#End pie Class
 
 class bowl:
         def __init__(self):
@@ -137,14 +195,22 @@ class bowl:
                 self.width = 250
                 self.height = 50
         def drawbowl(self):
-                pygame.draw.rect(screen, DATBLUE,(self.X,self.Y,self.width,self.height) ) #draws bowl 
+                pygame.draw.rect(screen, DATBLUE,(self.X,self.Y,self.width,self.height) ) #draws bowl
+
+
+#End bowl class 
+
+
 
 Egg = egg()
 Bowl = bowl()
 Milk = milk() #Delcare class objects outside of game loop to prevent redeclaring every loop (can be better?) 
 print(Egg.hitsLeft)
 Milkdrops=[]
-FlourBag = flour()
+Flour = flour()
+Flourclouds = []
+
+
 
 while keep_going == True:
         
@@ -190,10 +256,13 @@ while keep_going == True:
                 for drop in Milkdrops: #Tracks list of milk drops
                         drop.fall(Bowl,Milkdrops,dropidx)
                         dropidx += 1
+                if (Bowl.milkrequired <= 0 and Milkdrops == []) or (Milk.milkLeft <= 0 and Milkdrops == []):
+                        step = 2
 
                         
         if step == 2: #Flour step
-                Flourbag.drawFlour()
+                Flour.drawFlour()
+                
 
         sprite_list.update()
         sprite_list.draw(screen)
