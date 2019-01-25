@@ -10,6 +10,8 @@
 #make fillng 
 #Throw in oven 
 
+
+#Start setup 
 import pygame
 import random
 import math
@@ -100,7 +102,7 @@ class milk(pygame.sprite.Sprite):
                         
                 if self.milkLeft < 0:
                         self.milkLeft = 0
-        def Removeself(self):
+        def Removeself(self): #Removes sprite instance
                 self.kill()
 
 # End milk class
@@ -128,7 +130,7 @@ class milkDrop: #Class for falling milk drops. Yet to be impletmented
 
                 
 class flour(pygame.sprite.Sprite):
-        def __init__(self):
+        def __init__(self): #Initilizes sprite instance
                 pygame.sprite.Sprite.__init__(self)
                 self.flourLeft = 500
                 self.OGimage = Flourbag
@@ -179,7 +181,7 @@ class flour(pygame.sprite.Sprite):
 
 
 class flour_float(pygame.sprite.Sprite):
-        def __init__(self, size, flour):
+        def __init__(self, size, flour): #init function, cretes the sprite instance
                 pygame.sprite.Sprite.__init__(self)
                 self.image = FlourCloud
                 self.size = size
@@ -191,7 +193,7 @@ class flour_float(pygame.sprite.Sprite):
                 self.step = 0
                 sprite_list.add(self)
                 
-        def float(self,bowl,array, index):
+        def float(self,bowl,array, index): # Updates sprite as it floats down
                 if self.floatright == True:
                         self.floatpos = (self.floatpos[0]+3,self.floatpos[1]+3)
                 else:
@@ -212,7 +214,7 @@ class flour_float(pygame.sprite.Sprite):
                 if self.floatpos[1] > 600: #If reached bottom of screen, delete instance. CHANGE TO VARIABLE SCREEN SIZES!!!
                         self.selfDestruct(array,index)
   
-        def selfDestruct(self,array,index):
+        def selfDestruct(self,array,index): #Destroys sprite instance 
                 del array[index]
                 self.kill()
 
@@ -227,7 +229,10 @@ class filling:
         def __init__(self):
                 self.type = "null"
         def ChooseFilling(self):
-                self.ScreenText = "What type of pie would you like to make?"
+                self.ScreenString = "What type of pie would you like to make?"
+                self.ScreenText = Cambria.render(ScreenString,True, WHITE)
+                self.textbox = 
+                
                 
 #End filling Class
 
@@ -257,6 +262,10 @@ class bowl:
 
 
 
+
+
+
+
 Egg = egg()
 Bowl = bowl()
 Milk = milk() #Delcare class objects outside of game loop to prevent redeclaring every loop (can be better?) 
@@ -264,8 +273,11 @@ print(Egg.hitsLeft)
 Milkdrops=[]
 Flour = flour()
 Flourclouds = []
+#end of setup
 
 
+
+# Start Main game loop
 
 while keep_going == True:
         
@@ -319,19 +331,31 @@ while keep_going == True:
         if step == 2: #Flour step
                 Flour.drawFlour()
 
+                FlourString = "Pour the flour! Flour left: " + str(Flour.flourLeft) + " Flour needed: " + str(Bowl.flourrequired)
+                Flourtext = Cambria.render(FlourString, True, WHITE)
+                textbox = Flourtext.get_rect()
+                textbox.centerx = screen.get_rect().centerx
+                screen.blit(Flourtext,textbox)
+
                 if pygame.key.get_pressed()[pygame.K_RIGHT]: #Checks if right arrow key is pressed down
                         Flour.rotateRight()
                         print("angle: ", Flour.angle)
                 if pygame.key.get_pressed()[pygame.K_LEFT]: #Checks if left arrow key is pressed down
                         Flour.rotateLeft()
                         print("angle: ", Flour.angle)
-                if (Flour.angle > 90 or Flour.angle < -90) and Flour.flourLeft > 0: #Pours milk if carton is tilted enough (Move into Milk class?)
+                if (Flour.angle > 90 or Flour.angle < -90) and Flour.flourLeft > 0: #Pours flour if bag is tilted enough (Move into flour class?)
                         Flour.pourFlour(Flourclouds)
                         print("Flour left: ", Flour.flourLeft)
                 dropidx = 0 
-                for cloud in Flourclouds: #Tracks list of milk drops
+                for cloud in Flourclouds: #Tracks list of flour clouds
                         cloud.float(Bowl,Flourclouds,dropidx)
                         dropidx += 1
+                if (Bowl.flourrequired <= 0 and Flourclouds == []) or (Flour.flourLeft <= 0 and FlourClouds == []):
+                        print("Step 3 reached")
+                        Flour.kill()
+                        step = 3 
+
+        #if step == 3:
                 
 
         sprite_list.update()
