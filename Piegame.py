@@ -65,8 +65,8 @@ class milk(pygame.sprite.Sprite):
                 self.rect.x = self.milkpos[0]
                 self.rect.y = self.milkpos[1]
                 self.angle = 0
-                self.rightDown = False
-                self.leftDown = False
+                self.rightDown = False #What dis for? 
+                self.leftDown = False 
                 sprite_list.add(self)
 
                 
@@ -127,43 +127,89 @@ class milkDrop: #Class for falling milk drops. Yet to be impletmented
                 
 class flour(pygame.sprite.Sprite):
         def __init__(self):
+                pygame.sprite.Sprite.__init__(self)
                 self.flourLeft = 500
+                self.OGimage = Flourbag
                 self.image = Flourbag
-        def drawFlour(self):
-                self.pos = pygame.mouse.get_pos()
+                self.flourpos = (-50, 200)
+                self.rect = self.image.get_rect()
+                self.rect.x = self.flourpos[0]
+                self.rect.y = self.flourpos[1]
+                self.angle = 0
+                sprite_list.add(self)
+
+        def drawFlour(self): #Updates flour sprite 
+                self.flourpos = pygame.mouse.get_pos()
+                self.rect.x = self.flourpos[0]
+                self.rect.y = self.flourpos[1]
                 
-        def pourFlour(self): #Creates flour_float objects
+        def pourFlour(self, array): #Creates flour_float objects
                 if self.flourLeft > 0:
-                        size = randint(1,10)
+                        size = random.randint(1,10)
                         if size > self.flourLeft:
                                 size = flourLeft
-                        Cloud = flour_float(self,size)
+                        Cloud = flour_float(size,self)
+                        array.append(Cloud)
                 if self.flourLeft < 0:
                         self.flourLeft = 0
+                
+
+        def rotateLeft(self): #rotates left
+                self.image = pygame.transform.rotate(self.OGimage,self.angle)  #See note in rotateLeft below about code source
+                self.angle = self.angle+1 %360
+                if self.angle >359:
+                        self.angle = 0
+
+        def rotateRight(self): # rotates right
+                self.image = pygame.transform.rotate(self.OGimage,self.angle)    #first 2 Rotation code implemented from Stack Overflow user Ted Klein Bergman https://gamedev.stackexchange.com/questions/126353/how-to-rotate-an-image-in-pygame-without-losing-quality-or-increasing-size-or-mo
+                self.angle = self.angle-1 %360
+                if self.angle < -359:
+                        self.angle = 0
+
+
+
 
 
 #End flour Class
 
 
-class flour_float:
+
+
+class flour_float(pygame.sprite.Sprite):
         def __init__(self, size, flour):
+                pygame.sprite.Sprite.__init__(self)
+                self.image = FlourCloud
                 self.size = size
                 self.floatpos = flour.flourpos
+                self.rect = self.image.get_rect()
+                self.rect.x = self.floatpos[0]
+                self.rect.y = self.floatpos[1]
                 self.floatright = True
                 self.step = 0
-        def float(self):
+                sprite_list.add(self)
+                
+        def float(self,array, index):
                 if self.floatright == True:
                         self.floatpos = (self.floatpos[0]+3,self.floatpos[1]+3)
                 else:
                         self.floatpos = (self.floatpos[0]-3,self.floatpos[1]+3)
                 self.step += 1
-                if self.step >= 5:
+                if self.step >= 50:
                         if self.floatright == True:
                                 self.floatright = False
+                                step = 0
                         else:
                                 self.floatright = True
+                                step = 0
+                self.rect.x = self.floatpos[0]
+                self.rect.y = self.floatpos[1]
+                if self.floatpos[1] > 600: #If reached bottom of screen, delete instance. CHANGE TO VARIABLE SCREEN SIZES!!!
+                        self.selfDestruct(array,index)
+  
         def selfDestruct(self,array,index):
                 del array[index] 
+
+
 
 
 #End flour_float class
@@ -262,6 +308,20 @@ while keep_going == True:
                         
         if step == 2: #Flour step
                 Flour.drawFlour()
+
+                if pygame.key.get_pressed()[pygame.K_RIGHT]: #Checks if right arrow key is pressed down
+                        Flour.rotateRight()
+                        print("angle: ", Flour.angle)
+                if pygame.key.get_pressed()[pygame.K_LEFT]: #Checks if left arrow key is pressed down
+                        Flour.rotateLeft()
+                        print("angle: ", Flour.angle)
+                if (Flour.angle > 90 or Flour.angle < -90) and Flour.flourLeft > 0: #Pours milk if carton is tilted enough (Move into Milk class?)
+                        Flour.pourFlour(Flourclouds)
+                        print("Flour left: ", Flour.flourLeft)
+                dropidx = 0 
+                for cloud in Flourclouds: #Tracks list of milk drops
+                        cloud.float(Flourclouds,dropidx)
+                        dropidx += 1
                 
 
         sprite_list.update()
