@@ -225,18 +225,66 @@ class flour_float(pygame.sprite.Sprite):
 
 
 class filling:
-        quality = 0
+
+        #Block of universal class constants
+        ScreenString = "What type of pie would you like to make?"
+        ScreenText = Cambria.render(ScreenString,True, WHITE)
+        textbox = ScreenText.get_rect()
+        textbox.centerx = screen.get_rect().centerx
+        AppleString = "Apple"
+        AppleText = Cambria.render(AppleString,True,WHITE)
+        Applebox = AppleText.get_rect()
+        PumpkinString = "Pumpkin"
+        PumpkinText = Cambria.render(PumpkinString,True,WHITE)
+        PumpkinBox = PumpkinText.get_rect()
+        Berry = "Berry"
+        BerryText = Cambria.render(Berry,True,WHITE)
+        BerryBox = BerryText.get_rect()
+        LemonMeraine = "Lemon maraine"
+        LemonText = Cambria.render(LemonMeraine,True,WHITE)
+        LemonBox = LemonText.get_rect()
+        #End of class universals
         def __init__(self):
                 self.type = "null"
-        def ChooseFilling(self):
-                self.ScreenString = "What type of pie would you like to make?"
-                self.ScreenText = Cambria.render(ScreenString,True, WHITE)
-                self.textbox = 
+        def ChooseFilling(self): 
+                screen.blit(filling.ScreenText,filling.textbox)
+                AppleButton = button(filling.AppleText,WHITE,(200,200))
+                if AppleButton.drawButton() == True:
+                        self.type = "Apple"
+                        print("Apple")
+                PumpkinButton = button(filling.PumpkinText, WHITE, (500,200))
+                if PumpkinButton.drawButton() == True:
+                        self.type = "Pumpkin"
+                        Print("Pumpkin")
+                BerryButton = button(filling.BerryText, WHITE, (200, 250))
+                if BerryButton.drawButton() == True:
+                        self.type = "Berry"
+                        print("Berry")
+                LemonButton = button(filling.LemonText, WHITE, (500, 250))
+                if LemonButton.drawButton() == True:
+                        self.type = "Lemon"
+                        print("Lemon")
+                
+                
                 
                 
 #End filling Class
 
 
+class button:
+        def __init__(self,text,colour,pos):
+                self.text = text
+                self.colour = colour
+                self.textbox = text.get_rect()
+                self.textbox.centerx = pos[0]
+                self.textbox.centery = pos[1]
+        def drawButton(self):
+                screen.blit(self.text,self.textbox)
+                mousepos = pygame.mouse.get_pos()
+                if mousepos[0] > self.textbox.x and mousepos[0] < self.textbox.y+self.textbox.width and mousepos[1] > self.textbox.y and mousepos[1] < self.textbox.y + self.textbox.height:
+                                        return True
+                
+                
 
                 
 
@@ -273,6 +321,7 @@ print(Egg.hitsLeft)
 Milkdrops=[]
 Flour = flour()
 Flourclouds = []
+Filling = filling()
 #end of setup
 
 
@@ -350,12 +399,13 @@ while keep_going == True:
                 for cloud in Flourclouds: #Tracks list of flour clouds
                         cloud.float(Bowl,Flourclouds,dropidx)
                         dropidx += 1
-                if (Bowl.flourrequired <= 0 and Flourclouds == []) or (Flour.flourLeft <= 0 and FlourClouds == []):
+                if (Bowl.flourrequired <= 0 and Flourclouds == []) or (Flour.flourLeft <= 0 and Flourclouds == []):
                         print("Step 3 reached")
                         Flour.kill()
                         step = 3 
 
-        #if step == 3:
+        if step == 3:
+                Filling.ChooseFilling()
                 
 
         sprite_list.update()
