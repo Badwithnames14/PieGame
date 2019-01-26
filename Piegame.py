@@ -29,6 +29,7 @@ MilkCarton = pygame.image.load("Milkcarton.bmp").convert_alpha()
 sprite_list = pygame.sprite.Group()
 FlourCloud = pygame.image.load("Flourcloud.png").convert_alpha()
 Flourbag = pygame.image.load("Flourbag.png").convert_alpha()
+Apple = pygame.image.load("Apple.png").convert_alpha()
 
 
 class egg:
@@ -224,7 +225,7 @@ class flour_float(pygame.sprite.Sprite):
 
 
 
-class filling:
+class filling(pygame.sprite.Sprite):
 
         #Block of universal class constants
         ScreenString = "What type of pie would you like to make?"
@@ -246,29 +247,58 @@ class filling:
         #End of class universals
         def __init__(self):
                 self.type = "null"
-        def ChooseFilling(self): 
+        def ChooseFilling(self, Mouseclick):  #Deterimes what type of pie to make. Takes a boolean to determine when the mouse was clicked
                 screen.blit(filling.ScreenText,filling.textbox)
                 AppleButton = button(filling.AppleText,WHITE,(200,200))
-                if AppleButton.drawButton() == True:
+                if AppleButton.drawButton(Mouseclick) == True:
                         self.type = "Apple"
                         print("Apple")
                 PumpkinButton = button(filling.PumpkinText, WHITE, (500,200))
-                if PumpkinButton.drawButton() == True:
+                if PumpkinButton.drawButton(Mouseclick) == True:
                         self.type = "Pumpkin"
-                        Print("Pumpkin")
+                        print("Pumpkin")
                 BerryButton = button(filling.BerryText, WHITE, (200, 250))
-                if BerryButton.drawButton() == True:
+                if BerryButton.drawButton(Mouseclick) == True:
                         self.type = "Berry"
                         print("Berry")
                 LemonButton = button(filling.LemonText, WHITE, (500, 250))
-                if LemonButton.drawButton() == True:
+                if LemonButton.drawButton(Mouseclick) == True:
+                        
                         self.type = "Lemon"
                         print("Lemon")
-                
-                
-                
-                
+                if self.type != "null": #Returns true to show choice has been made
+                        return True
+        def Make_Filling(self): #Where the pie filling is made 
+                if self.type == "Apple":
+                        
+                if self.type == "Pumpkin":
+                        print("We'll make a pumpkin Pie")
+                if self.type == "Berry":
+                        print("We'll make a berry pie")
+                if self.type == "Lemon":
+                        print("We'll make a Lemon Meraine pie")
+                        
+                          
 #End filling Class
+
+
+class fruit:
+        def __init__(self,fruit,pos):
+                if fruit == "Apple":
+                        self.image = Apple
+                        self.OGimage = Apple
+                        self.pos = pos
+                        self.rect = self.image.get_rect()
+                        self.rect.x = pos[0]
+                        self.rect.y = pos[1]
+                if fruit == "Pumpkin":
+                        print("Still under development")
+                if fruit == "Berry":
+                        print("still under development")
+                if fruit == "Lemon":
+                        print("still under development")
+                        
+                        
 
 
 class button:
@@ -278,13 +308,14 @@ class button:
                 self.textbox = text.get_rect()
                 self.textbox.centerx = pos[0]
                 self.textbox.centery = pos[1]
-        def drawButton(self):
+        def drawButton(self, Mouseclick): #Draws a button and deterimes if it was clicked. Returns a boolean value
                 screen.blit(self.text,self.textbox)
                 mousepos = pygame.mouse.get_pos()
-                if mousepos[0] > self.textbox.x and mousepos[0] < self.textbox.y+self.textbox.width and mousepos[1] > self.textbox.y and mousepos[1] < self.textbox.y + self.textbox.height:
-                                        return True
+                if mousepos[0] > self.textbox.x and mousepos[0] < self.textbox.x+self.textbox.width and mousepos[1] > self.textbox.y and mousepos[1] < self.textbox.y + self.textbox.height: #Checks if mouse is in bounds of the button
+                        if Mouseclick == True:
+                                return True
                 
-                
+#End button class  
 
                 
 
@@ -302,7 +333,7 @@ class bowl:
                 self.Y = 400
                 self.width = 250
                 self.height = 100
-        def drawbowl(self):
+        def drawbowl(self): #Draws the bowl on screen
                 pygame.draw.rect(screen, DATBLUE,(self.X,self.Y,self.width,self.height) ) #draws bowl
 
 
@@ -322,6 +353,7 @@ Milkdrops=[]
 Flour = flour()
 Flourclouds = []
 Filling = filling()
+MouseClicked = False
 #end of setup
 
 
@@ -333,6 +365,9 @@ while keep_going == True:
         for event in pygame.event.get(): #Loop to check for user quiting game
                 if event.type == pygame.QUIT:
                         keep_going = False
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                        MouseClicked = True
+                        print("mouse click detected")
                         
                         
         screen.fill((0,0,0)) #Removes old sprites
@@ -405,9 +440,12 @@ while keep_going == True:
                         step = 3 
 
         if step == 3:
-                Filling.ChooseFilling()
+                if Filling.ChooseFilling(MouseClicked) == True:
+                        step = 4
+        if step == 4:
+                Filling.Make_Filling()
                 
-
+        MouseClicked = False
         sprite_list.update()
         sprite_list.draw(screen)
         pygame.display.update() #Updates display
