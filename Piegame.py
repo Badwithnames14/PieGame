@@ -19,9 +19,13 @@ pygame.init()
 screen = pygame.display.set_mode([800,600])
 keep_going = True
 step = 0
+
+#Colours below
 WHITE = (255,255,255)
 DATPINK = (249,119,188)
 DATBLUE = (0,204,204)
+#End Colours
+
 pygame.mixer.init()
 clock = pygame.time.Clock()
 Cambria = pygame.font.SysFont("Cambria",24)
@@ -58,7 +62,7 @@ class egg:
 
 
 class milk(pygame.sprite.Sprite):
-        def __init__(self): #init
+        def __init__(self): #init, sets up sprite
                 pygame.sprite.Sprite.__init__(self)
                 self.milkLeft = 500
                 self.milkpos = (-50,-50)
@@ -247,6 +251,7 @@ class filling(pygame.sprite.Sprite):
         #End of class universals
         def __init__(self):
                 self.type = "null"
+                self.step = 0
         def ChooseFilling(self, Mouseclick):  #Deterimes what type of pie to make. Takes a boolean to determine when the mouse was clicked
                 screen.blit(filling.ScreenText,filling.textbox)
                 AppleButton = button(filling.AppleText,WHITE,(200,200))
@@ -268,40 +273,89 @@ class filling(pygame.sprite.Sprite):
                         print("Lemon")
                 if self.type != "null": #Returns true to show choice has been made
                         return True
-        def Make_Filling(self): #Where the pie filling is made 
-                if self.type == "Apple":
-                        
-                if self.type == "Pumpkin":
-                        print("We'll make a pumpkin Pie")
-                if self.type == "Berry":
-                        print("We'll make a berry pie")
-                if self.type == "Lemon":
-                        print("We'll make a Lemon Meraine pie")
-                        
+        def Make_Filling(self): #Where the pie filling is made
+                if self.step == 0:
+                        if self.type == "Apple":
+                                Apple = fruit("Apple",(250,250))
+                                self.step = 1
+                        if self.type == "Pumpkin":
+                                print("We'll make a pumpkin Pie")
+                        if self.type == "Berry":
+                                print("We'll make a berry pie")
+                        if self.type == "Lemon":
+                                print("We'll make a Lemon Meraine pie")
+                else:
+                        print("We'll be making some cool code stuff here about fruit")
                           
 #End filling Class
 
 
-class fruit:
-        def __init__(self,fruit,pos):
+class fruit(pygame.sprite.Sprite):
+        def __init__(self,fruit,pos): #init function, chooses what type of fruit it is (maybe subclasses would be better?
                 if fruit == "Apple":
-                        self.image = Apple
-                        self.OGimage = Apple
-                        self.pos = pos
-                        self.rect = self.image.get_rect()
-                        self.rect.x = pos[0]
-                        self.rect.y = pos[1]
+                        self.type = Apple(pos)
                 if fruit == "Pumpkin":
-                        print("Still under development")
+                        self.type = Pumpkin(pos)
                 if fruit == "Berry":
-                        print("still under development")
+                        self.type = Berry(pos)
                 if fruit == "Lemon":
-                        print("still under development")
+                        self.type = Lemon(pos)
+        def update(self,pos):
+                self.type.update(pos)
+                
+#start fruit subclasses      
                         
-                        
+class Apple(fruit): #Class for Apple objects 
+        def __init__(self,pos):
+                self.image = Apple
+                self.OGimage = Apple
+                self.pos = pos
+                self.rect = self.image.get_rect()
+                self.rect.x = pos[0]
+                self.rect.y = pos[1]
+        def update(self,pos):
+                self.rect.x = pos[0]
+                self.rect.y = pos[1]
 
+class Pumpkin(fruit): #Class for Pumpkin objects
+        def __init__(self,pos):
+                self.image = Pumpkin
+                self.OGimage = Pumpkin
+                self.pos = pos
+                self.rect = self.image.get_rect()
+                self.rect.x = pos[0]
+                self.rect.y = pos[1]
+        def update(self,pos):
+                self.rect.x = pos[0]
+                self.rect.y = pos[1]
 
-class button:
+class Berry(fruit): #Class for berry objects
+        def __init__(self,pos):
+                self.image = Berry
+                self.OGimage = Berry
+                self.pos = pos
+                self.rect = self.image.get_rect()
+                self.rect.x = pos[0]
+                self.rect.y = pos[1]
+        def update(self, pos):
+                self.rect.x = pos[0]
+                self.rect.y = pos[1]
+                
+class Lemon(fruit): #Class for Lemon objects
+        def __init__(self,pos):
+                self.image = Lemon
+                self.OGimage = Lemon
+                self.pos = pos
+                self.rect = self.image.get_rect()
+                self.rect.x = pos[0]
+                self.rect.y = pos[1]
+        def update(self, pos):
+                self.rect.x = pos[0]
+                self.rect.y = pos[1]
+
+#End fruit subclasses
+
+class button: #Class used to make buttons
         def __init__(self,text,colour,pos):
                 self.text = text
                 self.colour = colour
