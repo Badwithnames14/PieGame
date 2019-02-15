@@ -33,7 +33,12 @@ MilkCarton = pygame.image.load("Milkcarton.bmp").convert_alpha()
 sprite_list = pygame.sprite.Group()
 FlourCloud = pygame.image.load("Flourcloud.png").convert_alpha()
 Flourbag = pygame.image.load("Flourbag.png").convert_alpha()
-Apple = pygame.image.load("Apple.png").convert_alpha()
+Knife = pygame.image.load("knife.png").convert_alpha()
+
+apple = pygame.image.load("Apple.png").convert_alpha()
+pumpkin = pygame.image.load("Pumpkin.png").convert_alpha()
+berry = pygame.image.load("Berry.png").convert_alpha()
+lemon = pygame.image.load("Lemon.png").convert_alpha()
 
 
 class egg:
@@ -273,21 +278,44 @@ class filling(pygame.sprite.Sprite):
                         print("Lemon")
                 if self.type != "null": #Returns true to show choice has been made
                         return True
-        def Make_Filling(self): #Where the pie filling is made
+        def Make_Filling(self,knife): #Where the pie filling is made
                 if self.step == 0:
                         if self.type == "Apple":
-                                Apple = fruit("Apple",(250,250))
+                                self.FruitSprite = fruit("Apple",(250,250))
                                 self.step = 1
                         if self.type == "Pumpkin":
-                                print("We'll make a pumpkin Pie")
+                                self.FruitSprite = fruit("Pumpkin",(250,250))
+                                self.step = 1
                         if self.type == "Berry":
-                                print("We'll make a berry pie")
+                                self.FruitSprite = fruit("Berry",(250,250))
+                                self.step = 1
                         if self.type == "Lemon":
                                 print("We'll make a Lemon Meraine pie")
-                else:
-                        print("We'll be making some cool code stuff here about fruit")
+                                self.FruitSprite = fruit("Lemon",(250,250))
+                                self.step = 1 
+                elif self.step == 1:
+                        self.FruitSprite.cut(knife)
+                        
                           
 #End filling Class
+
+class knife(pygame.sprite.Sprite):
+        def __init__(self, pos):
+                pygame.sprite.Sprite.__init__(self)
+                self.image = Knife
+                self.OGimage = Knife
+                self.pos = pos
+                self.rect = self.image.get_rect()
+                self.rect.x=pos[0]
+                self.rect.y=pos[1]
+                sprite_list.add(self)
+                
+        def move(self,pos):
+                self.rect.x = pos[0]
+                self.rect.y = pos[1]
+
+
+#End knife class
 
 
 class fruit(pygame.sprite.Sprite):
@@ -300,56 +328,81 @@ class fruit(pygame.sprite.Sprite):
                         self.type = Berry(pos)
                 if fruit == "Lemon":
                         self.type = Lemon(pos)
-        def update(self,pos):
-                self.type.update(pos)
+        def move(self,pos):
+                self.type.move(pos)
+        def cut(self,knife):
+                self.type.cut(knife)
                 
 #start fruit subclasses      
                         
 class Apple(fruit): #Class for Apple objects 
         def __init__(self,pos):
-                self.image = Apple
-                self.OGimage = Apple
+                pygame.sprite.Sprite.__init__(self)
+                self.image = apple
+                self.OGimage = apple
                 self.pos = pos
                 self.rect = self.image.get_rect()
                 self.rect.x = pos[0]
                 self.rect.y = pos[1]
-        def update(self,pos):
+                self.stage = 0
+                sprite_list.add(self)
+                self.HP = random.randint(4,10)
+        def move(self,pos):
                 self.rect.x = pos[0]
                 self.rect.y = pos[1]
+        def cut(self,knife):
+                if self.rect.colliderect(knife.rect) and self.stage == 0:
+                        self.HP -= 1
+                        if self.HP <= 0:
+                                print("Apple Cut")
+                                self.stage = 1
+                        else:
+                                return False
+                if self.stage == 1:
+                        print("Apple has been cut")
+                        return True
+        
+                
 
 class Pumpkin(fruit): #Class for Pumpkin objects
         def __init__(self,pos):
-                self.image = Pumpkin
-                self.OGimage = Pumpkin
+                pygame.sprite.Sprite.__init__(self)
+                self.image = pumpkin
+                self.OGimage = pumpkin
                 self.pos = pos
                 self.rect = self.image.get_rect()
                 self.rect.x = pos[0]
                 self.rect.y = pos[1]
-        def update(self,pos):
+                sprite_list.add(self)
+        def move(self,pos):
                 self.rect.x = pos[0]
                 self.rect.y = pos[1]
 
 class Berry(fruit): #Class for berry objects
         def __init__(self,pos):
-                self.image = Berry
-                self.OGimage = Berry
+                pygame.sprite.Sprite.__init__(self)
+                self.image = berry
+                self.OGimage = berry
                 self.pos = pos
                 self.rect = self.image.get_rect()
                 self.rect.x = pos[0]
                 self.rect.y = pos[1]
-        def update(self, pos):
+                sprite_list.add(self)
+        def move(self, pos):
                 self.rect.x = pos[0]
                 self.rect.y = pos[1]
                 
 class Lemon(fruit): #Class for Lemon objects
         def __init__(self,pos):
-                self.image = Lemon
-                self.OGimage = Lemon
+                pygame.sprite.Sprite.__init__(self)
+                self.image = lemon
+                self.OGimage = lemon
                 self.pos = pos
                 self.rect = self.image.get_rect()
                 self.rect.x = pos[0]
                 self.rect.y = pos[1]
-        def update(self, pos):
+                sprite_list.add(self)
+        def move(self, pos):
                 self.rect.x = pos[0]
                 self.rect.y = pos[1]
 
@@ -408,6 +461,7 @@ Flour = flour()
 Flourclouds = []
 Filling = filling()
 MouseClicked = False
+CuttingKnife = knife((0,0))
 #end of setup
 
 
@@ -497,7 +551,8 @@ while keep_going == True:
                 if Filling.ChooseFilling(MouseClicked) == True:
                         step = 4
         if step == 4:
-                Filling.Make_Filling()
+                Filling.Make_Filling(CuttingKnife)
+                CuttingKnife.move(pygame.mouse.get_pos())
                 
         MouseClicked = False
         sprite_list.update()
