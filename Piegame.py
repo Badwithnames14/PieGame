@@ -34,11 +34,15 @@ sprite_list = pygame.sprite.Group()
 FlourCloud = pygame.image.load("Flourcloud.png").convert_alpha()
 Flourbag = pygame.image.load("Flourbag.png").convert_alpha()
 Knife = pygame.image.load("knife.png").convert_alpha()
+RollingPin = pygame.image.load("Rollingpin.png").convert_alpha()
 
 apple = pygame.image.load("Apple.png").convert_alpha()
 pumpkin = pygame.image.load("Pumpkin.png").convert_alpha()
 berry = pygame.image.load("Berry.png").convert_alpha()
 lemon = pygame.image.load("Lemon.png").convert_alpha()
+
+doughball = pygame.image.load("Doughball.png").convert_alpha()
+rolleddough = pygame.image.load("RolledDoughball.png").convert_alpha()
 
 
 class egg:
@@ -294,7 +298,11 @@ class filling(pygame.sprite.Sprite):
                                 self.FruitSprite = fruit("Lemon",(250,250))
                                 self.step = 1 
                 elif self.step == 1:
-                        self.FruitSprite.cut(knife)
+                        if self.FruitSprite.cut(knife) == True:
+                                self.step = 2
+                elif self.step == 2:
+                        print("add sugar")
+                        return True
                         
                           
 #End filling Class
@@ -359,7 +367,7 @@ class Apple(fruit): #Class for Apple objects
                         else:
                                 return False
                 if self.stage == 1:
-                        print("Apple has been cut")
+                        self.kill()
                         return True
         
                 
@@ -422,12 +430,35 @@ class button: #Class used to make buttons
                         if Mouseclick == True:
                                 return True
                 
-#End button class  
+#End button class
+
+
+class rollingPin:
+        def __init__(self):
+                pygame.sprite.Sprite.__init__(self, pos)
+                self.image = RollingPin
+                self.OGimage = RollingPin
+                self.pos = pos
+                self.rect = self.image.get_rect()
+                self.rect.x = pos[0]
+                self.rect.y = pos[1]
+                sprite_list.add(self)
+        def move(self,pos):
+                self.rect.x = pos[0]
+                self.rect.y = pos[1]
 
                 
 
 class pie:
-        quality = 0
+        def __init__(self):
+                self.quality = 0
+                self.doughstep = 0
+        def MakeDough(self):
+                if self.doughstep == 0:
+                        self.doughstep = 1
+                        self.pin = rollingPin()
+                elif self.doughstep == 1:
+                        self.pin.move(pygame.mouse.get_pos())
 
 
 #End pie Class
@@ -462,6 +493,7 @@ Flourclouds = []
 Filling = filling()
 MouseClicked = False
 CuttingKnife = knife((0,0))
+Pie = pie(Filling)
 #end of setup
 
 
@@ -551,7 +583,8 @@ while keep_going == True:
                 if Filling.ChooseFilling(MouseClicked) == True:
                         step = 4
         if step == 4:
-                Filling.Make_Filling(CuttingKnife)
+                if Filling.Make_Filling(CuttingKnife) == True:
+                        step = 5
                 CuttingKnife.move(pygame.mouse.get_pos())
                 
         MouseClicked = False
