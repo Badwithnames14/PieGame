@@ -43,6 +43,8 @@ lemon = pygame.image.load("Lemon.png").convert_alpha()
 
 doughball = pygame.image.load("Doughball.png").convert_alpha()
 rolleddough = pygame.image.load("RolledDoughball.png").convert_alpha()
+PieTin = pygame.image.load("PieTin.png")
+fullPieTin = pygame.image.load("fullPieTin.png")
 
 
 class egg:
@@ -438,27 +440,59 @@ class rollingPin:
                 pygame.sprite.Sprite.__init__(self, pos)
                 self.image = RollingPin
                 self.OGimage = RollingPin
-                self.pos = pos
+                
                 self.rect = self.image.get_rect()
                 self.rect.x = pos[0]
                 self.rect.y = pos[1]
                 sprite_list.add(self)
-        def move(self,pos):
+        def move(self,pos): #Moves rolling pin sprite
                 self.rect.x = pos[0]
                 self.rect.y = pos[1]
 
-                
+class pietin:
+        def __init__(self,pos):
+                pygame.sprite.Sprite.__init__(self)
+                self.image = PieTin
+                self.OGimage = PieTin
+                self.rect = self.image.get_rect()
+                self.rect.x = pos[0]
+                self.rect.y = pos[1]
+                self.has_dough = False
+                sprite_list.add(self)
+        def adddough(self): # Adds dough to the pie tin
+                self.image = fullPieTin
+                self.has_dough = True
 
 class pie:
         def __init__(self):
                 self.quality = 0
                 self.doughstep = 0
-        def MakeDough(self):
+                self.isBaked = False
+        def MakeDough(self): #Goes through steps to roll the dough
                 if self.doughstep == 0:
-                        self.doughstep = 1
+                        pygame.sprite.Sprite.__init__(self, pos)
                         self.pin = rollingPin()
+                        self.image = doughball
+                        self.OGimage = doughball
+                        self.doughstep = 1
+                        
                 elif self.doughstep == 1:
                         self.pin.move(pygame.mouse.get_pos())
+                        #if pin collides with doughball, roll it a bit
+                elif self.doughstep == 2:
+                        self.image = rolleddough
+                        
+                #step 3:
+                        #now we put in the filling
+        def BakePie(): #Pie is put into the oven and then baked 
+                #set image to unbaked pie
+                #make oven asset
+                #Put pie in oven
+                #turn it on
+                #take it out
+                #Yay pie
+                self.placeholder = 1 
+                
 
 
 #End pie Class
@@ -586,6 +620,8 @@ while keep_going == True:
                 if Filling.Make_Filling(CuttingKnife) == True:
                         step = 5
                 CuttingKnife.move(pygame.mouse.get_pos())
+        if step == 5:
+                Pie.MakeDough()
                 
         MouseClicked = False
         sprite_list.update()
