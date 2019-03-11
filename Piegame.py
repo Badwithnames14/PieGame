@@ -42,7 +42,7 @@ berry = pygame.image.load("Berry.png").convert_alpha()
 lemon = pygame.image.load("Lemon.png").convert_alpha()
 
 doughball = pygame.image.load("Doughball.png").convert_alpha()
-rolleddough = pygame.image.load("RolledDoughball.png").convert_alpha()
+rolleddough = pygame.image.load("RolledDough.png").convert_alpha()
 PieTin = pygame.image.load("PieTin.png")
 fullPieTin = pygame.image.load("fullPieTin.png")
 
@@ -464,7 +464,7 @@ class pietin:
                 self.has_dough = True
 
 class pie:
-        def __init__(self):
+        def __init__(self, filling):
                 self.quality = 0
                 self.doughstep = 0
                 self.isBaked = False
