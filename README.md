@@ -1,4 +1,3 @@
-=======
 # PieGame
 A game about making pie. It's not great, but just mainly for me to learn more about making 2D games 
 
